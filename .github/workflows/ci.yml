@@ -1,0 +1,19 @@
+name: backend-ci
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ feat/** ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build & test
+        run: mvn -B -DskipTests=false clean verify

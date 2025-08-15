@@ -1,0 +1,62 @@
+name: backend-ci
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ feat/** ]
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Maven project
+        id: detect
+        shell: bash
+        run: |
+          if [ -f pom.xml ]; then
+            echo "has_maven=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_maven=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip (no Maven project yet)
+        if: steps.detect.outputs.has_maven == 'false'
+        run: echo "No pom.xml yet — skipping build."
+
+      - name: Set up JDK 17 (matches local runs)
+        if: steps.detect.outputs.has_maven == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Prime dependencies (offline cache)
+        if: steps.detect.outputs.has_maven == 'true'
+        run: ./mvnw -B -ntp -DskipTests dependency:go-offline
+
+      - name: Build & test
+        if: steps.detect.outputs.has_maven == 'true'
+        env:
+          MAVEN_OPTS: "-Dstyle.color=always"
+        run: ./mvnw -B -ntp clean verify
+
+      - name: Upload surefire reports
+        if: always() && steps.detect.outputs.has_maven == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+          if-no-files-found: ignore

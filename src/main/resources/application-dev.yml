@@ -3,19 +3,20 @@ server:
 
 spring:
   datasource:
+    # H2 in-memory DB; MODE=MySQL so schema matches your MySQL prod dialect
     url: jdbc:h2:mem:aviation;DB_CLOSE_DELAY=-1;MODE=MySQL
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update   # or create-drop if you want a clean DB each run
     open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
   flyway:
-    enabled: false
+    enabled: false       # <- IMPORTANT: disable Flyway for dev/H2
 
 logging:
   level:

@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mysql:8.0
+    command: ["mysqld","--default-authentication-plugin=mysql_native_password"]
+    environment:
+      MYSQL_DATABASE: aviation
+      MYSQL_USER: aviation
+      MYSQL_PASSWORD: aviation
+      MYSQL_ROOT_PASSWORD: aviation
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-paviation"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: ghcr.io/manohar-h/sdatdevops-finalsprint_backend/backend:latest
+    # or: build: .   (if you want to build locally)
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"

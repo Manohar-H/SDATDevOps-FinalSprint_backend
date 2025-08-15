@@ -7,19 +7,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class HealthControllerTest {
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mockMvc;
 
     @Test
     void healthReturnsOk() throws Exception {
-        mvc.perform(get("/api/v1/health"))
+        mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("ok"));
+                .andExpect(content().string("OK"));
     }
 }

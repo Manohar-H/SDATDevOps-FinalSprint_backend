@@ -5,3 +5,12 @@ management:
     web:
       exposure:
         include: health,info
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aviation
+    username: aviation
+    password: aviation
+  jpa:
+    hibernate:
+      ddl-auto: validate

@@ -5,7 +5,6 @@ This repository contains the backend for the SDATDevOps Final Sprint project.
 It is a Spring Boot API that communicates with the frontend (in a separate repo) to provide application functionality.
 
 ---
-
 ### Prerequisites
 - Docker and Docker Compose installed
 - GitHub Personal Access Token (PAT) with `read:packages` permission (for pulling GHCR images)
